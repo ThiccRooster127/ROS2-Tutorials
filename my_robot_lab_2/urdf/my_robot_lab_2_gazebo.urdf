@@ -1,0 +1,261 @@
+<?xml version="1.0"?>
+<robot name="my_robot">
+
+  <!-- ===== Base: 0.40 x 0.25 x 0.08, 2 kg ===== -->
+  <link name="base_link">
+    <visual>
+      <geometry><box size="0.4 0.25 0.08"/></geometry>
+      <material name="orange"><color rgba="0.95 0.5 0.1 1"/></material>
+    </visual>
+    <collision>
+      <geometry><box size="0.4 0.25 0.08"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="2.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.01148" ixy="0" ixz="0" iyy="0.02773" iyz="0" izz="0.03708"/>
+    </inertial>
+  </link>
+
+  <!-- ===== Wheels: radius 0.06, width 0.04, 0.15 kg ===== -->
+  <link name="left_wheel">
+    <visual>
+      <geometry><cylinder radius="0.06" length="0.04"/></geometry>
+      <material name="dark"><color rgba="0.1 0.1 0.1 1"/></material>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="0.06" length="0.04"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.15"/>
+      <inertia ixx="0.000155" ixy="0" ixz="0" iyy="0.000155" iyz="0" izz="0.00027"/>
+    </inertial>
+  </link>
+
+  <link name="right_wheel">
+    <visual>
+      <geometry><cylinder radius="0.06" length="0.04"/></geometry>
+      <material name="dark"/>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="0.06" length="0.04"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.15"/>
+      <inertia ixx="0.000155" ixy="0" ixz="0" iyy="0.000155" iyz="0" izz="0.00027"/>
+    </inertial>
+  </link>
+
+  <!-- ===== Caster: radius 0.03 ===== -->
+  <link name="caster_wheel">
+    <visual>
+      <geometry><sphere radius="0.03"/></geometry>
+      <material name="silver"><color rgba="0.75 0.75 0.78 1"/></material>
+    </visual>
+    <collision>
+      <geometry><sphere radius="0.03"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.05"/>
+      <inertia ixx="0.000018" ixy="0" ixz="0" iyy="0.000018" iyz="0" izz="0.000018"/>
+    </inertial>
+  </link>
+
+  <!-- ===== Wheel + caster joints ===== -->
+  <joint name="left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="left_wheel"/>
+    <origin xyz="-0.06 0.15 0" rpy="1.5707 0 0"/>
+    <axis xyz="0 0 -1"/>
+    <dynamics damping="0.01" friction="0.0"/>
+  </joint>
+
+  <joint name="right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="right_wheel"/>
+    <origin xyz="-0.06 -0.15 0" rpy="1.5707 0 0"/>
+    <axis xyz="0 0 -1"/>
+    <dynamics damping="0.01" friction="0.0"/>
+  </joint>
+
+  <!-- Caster bottom at z = -0.06, level with the wheel bottoms -->
+  <joint name="caster_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="caster_wheel"/>
+    <origin xyz="0.16 0 -0.03" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ===== Stereo cameras: 0.03 x 0.04 x 0.03, 16 cm baseline ===== -->
+  <link name="left_camera_link">
+    <visual>
+      <geometry><box size="0.03 0.04 0.03"/></geometry>
+      <material name="yellow"><color rgba="1 0.85 0 1"/></material>
+    </visual>
+    <collision>
+      <geometry><box size="0.03 0.04 0.03"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.02"/>
+      <inertia ixx="0.0000042" ixy="0" ixz="0" iyy="0.000003" iyz="0" izz="0.0000042"/>
+    </inertial>
+  </link>
+
+  <link name="right_camera_link">
+    <visual>
+      <geometry><box size="0.03 0.04 0.03"/></geometry>
+      <material name="yellow"/>
+    </visual>
+    <collision>
+      <geometry><box size="0.03 0.04 0.03"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.02"/>
+      <inertia ixx="0.0000042" ixy="0" ixz="0" iyy="0.000003" iyz="0" izz="0.0000042"/>
+    </inertial>
+  </link>
+
+  <!-- Mounted on top of the base, front edge flush with the base front (x = 0.20) -->
+  <joint name="left_camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="left_camera_link"/>
+    <origin xyz="0.185 0.08 0.055" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="right_camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="right_camera_link"/>
+    <origin xyz="0.185 -0.08 0.055" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ===== Optical frames (Z forward, X right, Y down) ===== -->
+  <link name="left_camera_link_optical">
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
+    </inertial>
+  </link>
+
+  <link name="right_camera_link_optical">
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
+    </inertial>
+  </link>
+
+  <joint name="left_camera_optical_joint" type="fixed">
+    <parent link="left_camera_link"/>
+    <child link="left_camera_link_optical"/>
+    <origin xyz="0 0 0" rpy="-1.5707 0 -1.5707"/>
+  </joint>
+
+  <joint name="right_camera_optical_joint" type="fixed">
+    <parent link="right_camera_link"/>
+    <child link="right_camera_link_optical"/>
+    <origin xyz="0 0 0" rpy="-1.5707 0 -1.5707"/>
+  </joint>
+
+  <!-- ===== Gazebo material colours ===== -->
+  <gazebo reference="base_link">
+    <visual><material>
+      <ambient>0.95 0.5 0.1 1</ambient><diffuse>0.95 0.5 0.1 1</diffuse>
+    </material></visual>
+  </gazebo>
+  <gazebo reference="left_wheel">
+    <visual><material>
+      <ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse>
+    </material></visual>
+    <mu1>1.0</mu1><mu2>1.0</mu2>
+  </gazebo>
+  <gazebo reference="right_wheel">
+    <visual><material>
+      <ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse>
+    </material></visual>
+    <mu1>1.0</mu1><mu2>1.0</mu2>
+  </gazebo>
+  <gazebo reference="caster_wheel">
+    <visual><material>
+      <ambient>0.75 0.75 0.78 1</ambient><diffuse>0.75 0.75 0.78 1</diffuse>
+    </material></visual>
+    <mu1>0.1</mu1><mu2>0.1</mu2>
+  </gazebo>
+  <gazebo reference="left_camera_link">
+    <visual><material>
+      <ambient>1 0.85 0 1</ambient><diffuse>1 0.85 0 1</diffuse>
+    </material></visual>
+  </gazebo>
+  <gazebo reference="right_camera_link">
+    <visual><material>
+      <ambient>1 0.85 0 1</ambient><diffuse>1 0.85 0 1</diffuse>
+    </material></visual>
+  </gazebo>
+
+  <!-- ===== Gazebo plugins ===== -->
+  <gazebo>
+    <plugin filename="gz-sim-joint-state-publisher-system"
+            name="gz::sim::systems::JointStatePublisher">
+      <joint_name>left_wheel_joint</joint_name>
+      <joint_name>right_wheel_joint</joint_name>
+    </plugin>
+
+    <plugin filename="gz-sim-pose-publisher-system"
+            name="gz::sim::systems::PosePublisher">
+      <publish_link_pose>true</publish_link_pose>
+      <publish_collision_pose>false</publish_collision_pose>
+      <publish_visual_pose>false</publish_visual_pose>
+      <publish_nested_model_pose>true</publish_nested_model_pose>
+      <update_rate>20</update_rate>
+    </plugin>
+
+    <plugin filename="gz-sim-diff-drive-system"
+            name="gz::sim::systems::DiffDrive">
+      <left_joint>left_wheel_joint</left_joint>
+      <right_joint>right_wheel_joint</right_joint>
+      <wheel_separation>0.30</wheel_separation>
+      <wheel_radius>0.06</wheel_radius>
+      <odom_publish_frequency>20</odom_publish_frequency>
+      <topic>cmd_vel</topic>
+      <frame_id>odom</frame_id>
+      <child_frame_id>base_link</child_frame_id>
+    </plugin>
+  </gazebo>
+
+  <!-- ===== Camera sensors: 800x600, 15 Hz, ~69 deg FOV ===== -->
+  <gazebo reference="left_camera_link">
+    <sensor name="left_camera" type="camera">
+      <always_on>true</always_on>
+      <update_rate>15.0</update_rate>
+      <topic>left_camera/image_raw</topic>
+      <camera>
+        <camera_info_topic>left_camera/camera_info</camera_info_topic>
+        <horizontal_fov>1.2</horizontal_fov>
+        <image>
+          <format>R8G8B8</format>
+          <width>800</width>
+          <height>600</height>
+        </image>
+        <clip><near>0.05</near><far>30.0</far></clip>
+      </camera>
+      <gz_frame_id>left_camera_link_optical</gz_frame_id>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="right_camera_link">
+    <sensor name="right_camera" type="camera">
+      <always_on>true</always_on>
+      <update_rate>15.0</update_rate>
+      <topic>right_camera/image_raw</topic>
+      <camera>
+        <camera_info_topic>right_camera/camera_info</camera_info_topic>
+        <horizontal_fov>1.2</horizontal_fov>
+        <image>
+          <format>R8G8B8</format>
+          <width>800</width>
+          <height>600</height>
+        </image>
+        <clip><near>0.05</near><far>30.0</far></clip>
+      </camera>
+      <gz_frame_id>right_camera_link_optical</gz_frame_id>
+    </sensor>
+  </gazebo>
+
+</robot>
